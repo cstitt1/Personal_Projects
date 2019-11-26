@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="Personal_Projects/Chess"/>
+	<classpathentry kind="src" path="Personal_Projects/CodeJam"/>
+	<classpathentry kind="src" path="Personal_Projects/Project_Euler"/>
+	<classpathentry kind="src" path="Personal_Projects/src"/>
+	<classpathentry kind="src" path="Villanova Code"/>
+	<classpathentry kind="src" path="Chess2"/>
+	<classpathentry kind="src" path="Kattis"/>
+	<classpathentry kind="lib" path="Personal_Projects/lib/core.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
