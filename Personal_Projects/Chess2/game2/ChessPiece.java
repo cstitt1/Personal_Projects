@@ -8,12 +8,12 @@ public class ChessPiece {
 	/**
 	 * Constructs a new Chess Piece based on color, type, and location
 	 * @param kind the type of the piece
-	 * @param isBlack true if the piece is black, false otherwise
+	 * @param isW true if the piece is white, false otherwise
 	 * @param location the location on the board of the piece
 	 */
-	public ChessPiece (String kind, boolean isBlack, String location) {
+	public ChessPiece (String kind, boolean isW, String location) {
 		type = kind;
-		isWhite = !isBlack;
+		isWhite = isW;
 		loc = location;
 	}
 	
@@ -58,6 +58,6 @@ public class ChessPiece {
 	}
 	
 	public String toString() {
-		return type + isWhite + loc;
+		return type + "," + isWhite + "," + loc;
 	}
 }

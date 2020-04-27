@@ -4,16 +4,19 @@ import javax.swing.JOptionPane;
 import processing.core.*;
 
 @SuppressWarnings("serial")
-//TODO: Fix en passant
+//TODO: New click-based GUI
+//TODO: Chess (AI?) robot
 public class ChessGUI extends PApplet{
 	private ChessGame game;
 	private String move;
 	private boolean isWhiteTurn;
+	private boolean gameOver;
 	
 	public void setup() {
 		size(632,632); //632 = 8*79
 		game = new ChessGame(frame);
 		isWhiteTurn = true;
+		gameOver = false;
 		move = "";
 	}
 	
@@ -32,7 +35,7 @@ public class ChessGUI extends PApplet{
 		}
 		
 		PieceDraw drawer = new PieceDraw(bg.pixels);
-		for (ChessPiece piece : game.getChessBoard().getBoard()) {drawPieces(drawer,piece);}
+		for (ChessPiece piece : game.getChessBoard()) {drawPieces(drawer,piece);}
 		
 		bg.updatePixels();
 		image(bg,0,0);
@@ -64,74 +67,38 @@ public class ChessGUI extends PApplet{
 	 * Interprets the key pressed any time a key is pressed
 	 */
 	public void keyPressed() {
+		if (gameOver) {return;}
+		
 		move += (char) keyCode;
 		
 		if (move.length() == 5) {
-			performMove(move.toLowerCase());
+			String moveToMake = move.toLowerCase();
+			
+			ChessPiece piece = game.getPiece(moveToMake.substring(0, 2));
+			if (piece != null && piece.getIsWhite() != isWhiteTurn) {
+				JOptionPane.showMessageDialog(frame, "It is not your turn to move","",JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			
+			game.makeMove(moveToMake);
+			if (!game.disp) {isWhiteTurn = !isWhiteTurn;}
+			game.disp = false;
+			
 			move = "";
 			
-			if (game.check(true)) {
-				if (game.checkmate(true)) {System.out.println("White is in checkmate!");}
-				else {System.out.println("White is in check!");}
-			} else if (game.check(false)) {
-				if (game.checkmate(false)) {System.out.println("Black is in checkmate!");}
-				else {System.out.println("Black is in check!");}
+			int cond = game.endCond();
+			boolean end = Math.abs(cond) == 2;
+			String state = cond<0?"White":"Black";
+			state += " is in check";
+			state += end?"mate!":"!";
+			
+			if (cond == 0) {
+				JOptionPane.showMessageDialog(frame, "It's a stalemate!","",JOptionPane.ERROR_MESSAGE);
+				gameOver = true;
+			} else if (cond < 3) {
+				JOptionPane.showMessageDialog(frame, state,"",JOptionPane.ERROR_MESSAGE);
+				gameOver = end;
 			}
 		}
-	}
-	
-	/**
-	 * Performs the move coded by moveToMake
-	 * @param moveToMake the move coded by oldLocation + space + newLocation
-	 */
-	private void performMove(String moveToMake) {
-		if (game.getChessBoard().getPiece(moveToMake.substring(0, 2)) != null && game.getChessBoard().getPiece(moveToMake.substring(0, 2)).getIsWhite() != isWhiteTurn) {
-			JOptionPane.showMessageDialog(frame, "It is not your turn to move","",JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		
-		if (isWhiteTurn) {
-			if (moveToMake.charAt(3) == 'g' && game.canCastle(isWhiteTurn, moveToMake.charAt(3) == 'g')) {
-				if (moveToMake.substring(3).equals("g1") && game.getChessBoard().getPiece(moveToMake.substring(0, 2)).getType().equals("king")) {
-					game.castle(true, true);
-					if (!game.getChessBoard().disp) {isWhiteTurn = !isWhiteTurn;}
-					game.getChessBoard().disp = false;
-					return;
-				}
-			} else if (moveToMake.charAt(3) == 'c' && game.canCastle(isWhiteTurn, moveToMake.charAt(3) != 'c')) {
-				if (moveToMake.substring(3).equals("c1") && game.getChessBoard().getPiece(moveToMake.substring(0, 2)).getType().equals("king")) {
-					game.castle(true, false);
-					if (!game.getChessBoard().disp) {isWhiteTurn = !isWhiteTurn;}
-					game.getChessBoard().disp = false;
-					return;
-				}
-			}
-		} else {
-			if (moveToMake.charAt(3) == 'g' && game.canCastle(isWhiteTurn, moveToMake.charAt(3) == 'g')) {
-				if (moveToMake.substring(3).equals("g8") && game.getChessBoard().getPiece(moveToMake.substring(0, 2)).getType().equals("king")) {
-					game.castle(false, true);
-					if (!game.getChessBoard().disp) {isWhiteTurn = !isWhiteTurn;}
-					game.getChessBoard().disp = false;
-					return;
-				}
-			} else if (moveToMake.charAt(3) == 'c' && game.canCastle(isWhiteTurn, moveToMake.charAt(3) != 'c')) {
-				if (moveToMake.substring(3).equals("c8") && game.getChessBoard().getPiece(moveToMake.substring(0, 2)).getType().equals("king")) {
-					game.castle(false, false);
-					if (!game.getChessBoard().disp) {isWhiteTurn = !isWhiteTurn;}
-					game.getChessBoard().disp = false;
-					return;
-				}
-			}
-		}
-		
-		int offset=1;
-		if (isWhiteTurn) {offset*=-1;}
-		
-		if (game.canEnPassant(moveToMake.substring(0,2), moveToMake.substring(3,4)+(char)(moveToMake.charAt(4)+offset))) {
-			game.enPassant(moveToMake.substring(0,2), moveToMake.substring(3,4)+(char)(moveToMake.charAt(4)+offset));
-		} else {game.makeMove(moveToMake, false);}
-		
-		if (!game.getChessBoard().disp) {isWhiteTurn = !isWhiteTurn;}
-		game.getChessBoard().disp = false;
 	}
 }
