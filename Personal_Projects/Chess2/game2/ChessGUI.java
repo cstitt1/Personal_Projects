@@ -1,22 +1,18 @@
 package game2;
 
-import javax.swing.JOptionPane;
 import processing.core.*;
 
 @SuppressWarnings("serial")
-//TODO: New click-based GUI
-//TODO: Chess (AI?) robot
+//TODO: Create Chess (AI?) robot
 public class ChessGUI extends PApplet{
 	private ChessGame game;
 	private String move;
-	private boolean isWhiteTurn;
-	private boolean gameOver;
+	private boolean mouselr = true;
+	private boolean tips = false;
 	
 	public void setup() {
 		size(632,632); //632 = 8*79
 		game = new ChessGame(frame);
-		isWhiteTurn = true;
-		gameOver = false;
 		move = "";
 	}
 	
@@ -40,16 +36,41 @@ public class ChessGUI extends PApplet{
 		bg.updatePixels();
 		image(bg,0,0);
 		
-		textSize(15);
+		if (tips) {
+			ChessPiece piece = game.getPiece(move);
+			if (piece != null && game.getTurn() == piece.getIsWhite()) {
+				String[] locs = piece.getMoves().split(",");
+				for (String loc : locs) {
+					if (loc.length()<2) {continue;}
+					int x = (loc.charAt(0)-97)*79+79/2;//a --> 0, b --> 1, etc.
+					int y = (56-loc.charAt(1))*79+79/2;//8 --> 0, 7 --> 1, etc.
+					fill(color(255,0,0));
+					ellipse(x,y,79/4,79/4);
+				}
+				
+				int c = piece.getIsWhite()?0:255;
+				int x = (piece.getLocation().charAt(0)-97)*79+79/2;
+				int y = (56-piece.getLocation().charAt(1))*79+79/2;
+				fill(color(c,c,c));
+				ellipse(x,y,79/4,79/4);
+			}
+		}
+		
+		/*textSize(15); -- lettering of squares
 		fill(0,0,255);
 		String[] let = {"a","b","c","d","e","f","g","h"};
 		for (int i=0; i<8; i++) {
 			for (int j=1; j <= 8; j++) {
 				text(let[i]+j,i*79,(8-j)*79+15);
 			}
-		}
+		}*/
 	}
 	
+	/**
+	 * Helper function for the drawing of the pieces
+	 * @param d the PieceDraw object in use
+	 * @param p the piece to be drawn
+	 */
 	private void drawPieces(PieceDraw d, ChessPiece p) {
 		int color = p.getIsWhite()?255:0;
 		//1=49, a=97
@@ -63,42 +84,18 @@ public class ChessGUI extends PApplet{
 		else {d.pawn(color, coor);}
 	}
 	
-	/**
-	 * Interprets the key pressed any time a key is pressed
-	 */
-	public void keyPressed() {
-		if (gameOver) {return;}
+	public void mousePressed() {
+		tips = false;
+		mouselr = mouseButton == LEFT;
+		String[] let = {"a","b","c","d","e","f","g","h"};
+		move = let[mouseX/79] + (8 - mouseY/79);
+	}
+	
+	public void mouseReleased() {
+		String[] let = {"a","b","c","d","e","f","g","h"};
+		String pos = let[mouseX/79] + (8 - mouseY/79);
 		
-		move += (char) keyCode;
-		
-		if (move.length() == 5) {
-			String moveToMake = move.toLowerCase();
-			
-			ChessPiece piece = game.getPiece(moveToMake.substring(0, 2));
-			if (piece != null && piece.getIsWhite() != isWhiteTurn) {
-				JOptionPane.showMessageDialog(frame, "It is not your turn to move","",JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			
-			game.makeMove(moveToMake);
-			if (!game.disp) {isWhiteTurn = !isWhiteTurn;}
-			game.disp = false;
-			
-			move = "";
-			
-			int cond = game.endCond();
-			boolean end = Math.abs(cond) == 2;
-			String state = cond<0?"White":"Black";
-			state += " is in check";
-			state += end?"mate!":"!";
-			
-			if (cond == 0) {
-				JOptionPane.showMessageDialog(frame, "It's a stalemate!","",JOptionPane.ERROR_MESSAGE);
-				gameOver = true;
-			} else if (cond < 3) {
-				JOptionPane.showMessageDialog(frame, state,"",JOptionPane.ERROR_MESSAGE);
-				gameOver = end;
-			}
-		}
+		if (mouselr) {game.makeMove(move + " " + pos);}
+		else {tips = true;}
 	}
 }

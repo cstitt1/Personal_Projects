@@ -4,6 +4,7 @@ public class ChessPiece {
 	private String type;
 	private boolean isWhite;
 	private String loc;
+	private String moves = "";
 	
 	/**
 	 * Constructs a new Chess Piece based on color, type, and location
@@ -55,6 +56,22 @@ public class ChessPiece {
 	 */
 	public String getLocation() {
 		return loc;
+	}
+	
+	/**
+	 * Returns the piece's valid moves
+	 * @return the piece's valid moves
+	 */
+	public String getMoves() {
+		return moves;
+	}
+	
+	/**
+	 * Sets the piece's valid moves
+	 * @param mv the new set of moves
+	 */
+	public void setMoves(String mv) {
+		moves = mv;
 	}
 	
 	public String toString() {
