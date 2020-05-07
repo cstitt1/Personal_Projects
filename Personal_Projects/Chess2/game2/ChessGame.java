@@ -68,6 +68,14 @@ public class ChessGame {
 	}
 	
 	/**
+	 * Returns whether or not the game is over
+	 * @return whether or not the game is over
+	 */
+	public boolean isOver() {
+		return gameOver;
+	}
+	
+	/**
 	 * Returns true if the location loc is valid, false otherwise
 	 * @param loc the location to be checked
 	 * @return true if the location loc is valid, false otherwise
@@ -89,16 +97,17 @@ public class ChessGame {
 	/**
 	 * Moves a piece based on the coordinates given
 	 * @param move two space-separated coordinates
+	 * @param human true if the one making a move is a human, false otherwise
 	 */
-	public void makeMove(String move) {
+	public void makeMove(String move, boolean human) {
 		String loc = move.substring(0,2);
 		String other = move.substring(3);
 		ChessPiece me = getPiece(loc), nxt = getPiece(other);
 		
-		if (gameOver) {gErr("The game is over!"); return;}
-		if (me == null) {gErr("There is no piece at "+loc); return;}
-		if (me.getIsWhite() != whiteTurn) {gErr("Not your turn!"); return;}
-		if (!me.getMoves().contains(other)) {gErr("Move "+loc+" to "+other+" is not valid"); return;}
+		if (gameOver) {if (human) {gErr("The game is over!");} return;}
+		if (me == null) {if (human) {gErr("There is no piece at "+loc);} return;}
+		if (me.getIsWhite() != whiteTurn) {if (human) {gErr("Not your turn!");} return;}
+		if (!me.getMoves().contains(other)) {if (human) {gErr("Move "+loc+" to "+other+" is not valid");} return;}
 		
 		if (me.getType().equals("pawn") && nxt == null) {
 			if (Math.abs(loc.charAt(0)-other.charAt(0)) == 1 && Math.abs(loc.charAt(1)-other.charAt(1)) == 1) {

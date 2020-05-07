@@ -1,5 +1,7 @@
 package game2;
 
+import javax.swing.JOptionPane;
+
 import processing.core.*;
 
 @SuppressWarnings("serial")
@@ -9,11 +11,21 @@ public class ChessGUI extends PApplet{
 	private String move;
 	private boolean mouselr = true;
 	private boolean tips = false;
+	private ChessBot aibot;
 	
 	public void setup() {
 		size(632,632); //632 = 8*79
 		game = new ChessGame(frame);
 		move = "";
+		aibot = null;
+		String[] options = {"1-Player","2-Player"};
+		int p = JOptionPane.showOptionDialog(frame,"","Let's Play A Game",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE,null,options,null);
+		if (p == 0) {
+			String[] cols = {"White","Black"};
+			int c = JOptionPane.showOptionDialog(frame,"","Pick a Color",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE,null,cols,null);
+			aibot = new ChessBot(c == 1);
+			JOptionPane.showMessageDialog(frame, "Beep Boop. I'm Chess Bot! Let's have some fun!","",JOptionPane.PLAIN_MESSAGE);
+		}
 	}
 	
 	public void draw() {
@@ -56,6 +68,10 @@ public class ChessGUI extends PApplet{
 			}
 		}
 		
+		if (aibot != null && aibot.getColor() == game.getTurn() && !game.isOver()) {
+			game.makeMove(aibot.chooseMove(game.getChessBoard()), false);
+		}
+		
 		/*textSize(15); -- lettering of squares
 		fill(0,0,255);
 		String[] let = {"a","b","c","d","e","f","g","h"};
@@ -95,7 +111,9 @@ public class ChessGUI extends PApplet{
 		String[] let = {"a","b","c","d","e","f","g","h"};
 		String pos = let[mouseX/79] + (8 - mouseY/79);
 		
-		if (mouselr) {game.makeMove(move + " " + pos);}
-		else {tips = true;}
+		if (aibot != null && aibot.getColor() != game.getTurn()) {
+			if (mouselr) {game.makeMove(move + " " + pos, true);}
+			else {tips = true;}
+		}
 	}
 }
