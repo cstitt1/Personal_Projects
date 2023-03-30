@@ -82,20 +82,65 @@ public class AnagramicSquares {
 			}
 		}
 		
-		String sqAnagramStr = "";
+		//						 0  1  2  3  4  5  6  7  8  9
+		String[] sqAnagramStr = {"","","","","","","","","",""};
 		for (String numSet : sqDigitMap.values()) {
 			if (numSet.contains(",")) {
-				sqAnagramStr = sqAnagramStr + (sqAnagramStr.isEmpty()?"":";") + numSet;
+				int index = numSet.indexOf(",");
+				sqAnagramStr[index] = sqAnagramStr[index] + (sqAnagramStr[index].isEmpty()?"":",") + numSet;
 			}
 		}
-		String[] sqAnagramArr = sqAnagramStr.split(";");
+		
+		for (String str : sqAnagramStr) {if (str.indexOf(',') <= 4) {System.out.println(str.indexOf(',') + ": " + str);}} /*TODO: EXTRA*/
 		
 		for (String wordGramStr : anagramArr) {
+			System.out.println(wordGramStr);/*TODO: EXTRA*/
 			String[] wordGramArr = wordGramStr.split(",");
 			for (int wg1 = 0; wg1 < wordGramArr.length - 1; wg1++) {
 				for (int wg2 = wg1 + 1; wg2 < wordGramArr.length; wg2++) {
 					String wordGram1 = wordGramArr[wg1], wordGram2 = wordGramArr[wg2];
+					System.out.println("\t -- "+wordGram1+","+wordGram2);/*TODO: EXTRA*/
 					
+					//wg1 'indexes' array, where vals are where moved to in wg2
+					int len = wordGram1.length(); char[] wG2Arr = wordGram2.toCharArray();
+					int[] transposeArr = new int[len];
+					
+					for (int cInd = 0; cInd < len; cInd++) {
+						char charAt = wordGram1.charAt(cInd);
+						for (int tInd = 0; tInd < len; tInd++) {
+							if (charAt == wG2Arr[tInd]) {
+								transposeArr[cInd] = tInd;
+								wG2Arr[tInd] = 0;
+								break;
+							}
+						}
+					}
+					
+					System.out.print("\t\t -- ["); for (int i : transposeArr) {System.out.print(i + ",");} System.out.println("]");/*TODO: EXTRA*/
+					
+					//TODO: then use moves to see if squares' anagrams are in collection
+					String sqNumsStr = sqAnagramStr[len]; wG2Arr = wordGram2.toCharArray();
+					if (sqNumsStr.isBlank()) {break;}
+					
+					String[] sqNums = sqNumsStr.split(",");
+					for (String sqNum : sqNums) {
+						char[] origSq = sqNum.toCharArray(), tSq = new char[len];
+						for (int sqInd = 0; sqInd < len; sqInd++) {tSq[transposeArr[sqInd]] = origSq[sqInd];}
+						
+						String transposeSq = String.copyValueOf(tSq);
+						if (sqNumsStr.contains(transposeSq)) {
+							int[] checkArr = new int[10]; boolean chk = true;
+							for (int chkInd = 0; chkInd < len; chkInd++) {
+								int calcInd = tSq[chkInd] - '0';
+								char compLetter = wG2Arr[chkInd];
+								
+								if (checkArr[calcInd] == 0 || checkArr[calcInd] == ((int) compLetter)) {checkArr[calcInd] = (int) compLetter;}
+								else {chk = false; break;}
+							}
+							
+							if (chk) {System.out.println("\t\t\t -- " + sqNum + " to " + transposeSq);/*TODO: EXTRA*/}
+						}
+					}
 				}
 			}
 		}

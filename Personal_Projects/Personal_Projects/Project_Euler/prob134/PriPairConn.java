@@ -2,7 +2,17 @@ package prob134;
 
 public class PriPairConn {
 	public static void main(String[] args) {
-		long sum = 0;
+		System.out.println("7\n---------");
+		int count = 0;
+		for (int i = 2; true; i++) {
+			System.out.println(7*i);
+			if ((""+(7*i)).endsWith("7")) {
+				if (count++ == 1) {break;}
+				System.out.println("---------");
+			}
+		}
+	}
+		/*long sum = 0;
 		
 		for (long p1 = 5; p1 <= 1000000; p1+=2) {
 			if (!isPrime(p1)) {
@@ -43,5 +53,5 @@ public class PriPairConn {
 		} else {
 			return a*pow(a,b-1);
 		}
-	}
+	}*/
 }

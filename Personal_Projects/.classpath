@@ -8,6 +8,9 @@
 	<classpathentry kind="src" path="Villanova Code"/>
 	<classpathentry kind="src" path="Chess2"/>
 	<classpathentry kind="src" path="Kattis"/>
+	<classpathentry kind="src" path="Project_Euler_Solved"/>
+	<classpathentry kind="src" path="CodeJam2022"/>
+	<classpathentry kind="src" path="KickStart2022"/>
 	<classpathentry kind="lib" path="Personal_Projects/lib/core.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
